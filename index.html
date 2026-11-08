@@ -8,34 +8,23 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',Arial,sans-serif;border-radius:0 !important}
 body{background:#D50012}
-.wrap{max-width:420px;margin:0 auto;background:#D50012;overflow:hidden;padding:18px 14px 20px}
-.header{position:relative;background:#D50012;padding:10px 0 0;overflow:hidden}
-.header-red{position:absolute;inset:0;background:radial-gradient(600px 300px at 10% 0%, #FF1A2A 0%, #D50012 55%, #A8000E 100%)}
-.top-content{position:relative;z-index:2;display:flex;gap:8px}
-.left{width:48%;padding:6px 0 0 10px;color:#fff}
-.logo-box{width:168px;height:108px;display:flex;align-items:center;justify-content:center;background:transparent}
-.logo-box img{width:100%;height:100%;object-fit:contain}
-.header h1{font-size:34px;line-height:.92;font-weight:800;margin-top:16px;letter-spacing:-.5px}
-.header h1 span{font-size:54px;font-weight:900;display:block;letter-spacing:-1px}
-.header h1 i{display:block;width:148px;height:4px;background:#fff;margin-top:6px}
-.header p{font-size:16px;font-weight:600;line-height:1.2;margin-top:11px}
-.right{width:52%;position:relative}
-.right-img{width:100%;height:278px;object-fit:cover;display:block}
-.curve{position:relative;height:18px;background:#fff;margin-top:-8px;z-index:4}
-/* CARD */
-.card{background:#fff;margin:0 6px;padding:18px 12px 18px;box-shadow:0 12px 30px rgba(0,0,0,.18);position:relative;z-index:5}
+.wrap{max-width:420px;margin:0 auto;background:#D50012;padding:0 0 20px}
+/* PARTE DE ARRIBA - TU IMAGEN TAL CUAL */
+.top-img{width:100%;display:block;line-height:0}
+.top-img img{width:100%;height:auto;display:block}
+/* CARD ABAJO */
+.card{background:#fff;margin:0 10px;padding:18px 12px 18px;box-shadow:0 12px 30px rgba(0,0,0,.18);margin-top:-2px}
 .field{position:relative;display:flex;align-items:center;gap:11px;background:#F1F1F1;padding:13px 38px 13px 13px;margin-bottom:12px;border:1px solid #EDEDED}
 .field svg.icon{width:28px;height:28px;flex-shrink:0}
 .field input,.field select{border:none;background:transparent;outline:none;width:100%;font-size:15.5px;color:#4A4A4A;font-weight:500;min-width:0}
 .field input::placeholder{color:#6B6B6B}
-.field select{appearance:none;cursor:pointer;color:#4A4A4A;padding-right:4px}
-.field .chev{color:#D50012;width:18px;height:18px;flex-shrink:0;position:absolute;right:34px;pointer-events:none}
-.clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:20px;height:20px;background:rgba(0,0,0,.08);color:#888;border:none;font-size:12px;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center}
+.field select{appearance:none;cursor:pointer;color:#4A4A4A}
+.field .chev{width:18px;height:18px;flex-shrink:0;position:absolute;right:34px;pointer-events:none}
+.clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:20px;height:20px;background:rgba(0,0,0,.07);color:#888;border:none;font-size:13px;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center}
 .clear.show{display:flex}
 .file-row{cursor:pointer;padding-right:13px}
 .file-row span{flex:1;font-size:14.5px;color:#5A5A5A;font-weight:500;line-height:1.2}
 .file-row .cam{width:32px;height:32px;flex-shrink:0}
-#preview{width:100%;height:180px;object-fit:cover;display:none;margin:-2px 0 12px}
 /* SECURE */
 .secure{display:flex;align-items:center;gap:10px;background:#FFD7DE;padding:14px 12px;margin-bottom:16px}
 .secure .shield{width:42px;height:42px;flex-shrink:0}
@@ -44,43 +33,27 @@ body{background:#D50012}
 .secure p{font-size:12.5px;line-height:1.35;color:#1A1A1A;margin-top:3px}
 .secure .wa-wrap{width:46px;height:46px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .secure .wa-wrap svg{width:46px;height:46px}
-/* BUTTON */
+/* BOTON */
 .btn{width:100%;background:linear-gradient(180deg,#E60013 0%,#B0000E 100%);color:#fff;border:none;padding:16px;font-size:21px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 4px 0 #7A0007}
 .btn svg{width:22px;height:22px}
 .btn:active{transform:translateY(2px);box-shadow:0 2px 0 #7A0007}
-/* FOOTER */
 .footer{text-align:center;padding:18px 20px 6px;color:#fff}
 .footer p{font-size:17.5px;font-weight:700;font-style:italic;line-height:1.2}
 .footer i{display:block;width:185px;height:5px;background:#fff;margin:9px auto 0;transform:rotate(-1deg)}
 @media(max-width:480px){
-  .wrap{max-width:100%;padding:14px 10px 16px}
-  .left{padding-left:8px}
-  .logo-box{width:150px;height:96px}
-  .header h1{font-size:31px}
-  .header h1 span{font-size:49px}
-  .header p{font-size:15px}
-  .right-img{height:260px}
-  .card{margin:0 4px;padding:16px 10px}
+  .wrap{max-width:100%}
+  .card{margin:0 8px;padding:16px 10px}
   .btn{font-size:20px}
 }
 </style>
 </head>
 <body>
 <div class="wrap">
-<div class="header"><div class="header-red"></div>
-<div class="top-content">
-<div class="left">
-<div class="logo-box"><img src="Logo-perfil.png" alt="DoloYa"></div>
-<h1>Registro de<span>Aliados</span><i></i></h1>
-<p>Conecta tu negocio<br>con más clientes</p>
-</div>
-<div class="right">
-<img id="heroImg" class="right-img" src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=700&q=80" alt="Aliado">
-</div>
-</div>
-<div class="curve"></div>
-</div>
 
+<!-- ARRIBA TU IMAGEN -->
+<div class="top-img"><img src="portada-aliados.jpg" alt="DoloYa Registro de Aliados"></div>
+
+<!-- ABAJO TAL CUAL -->
 <div class="card">
 <label class="field">
 <svg class="icon" viewBox="0 0 24 24" fill="#D50012"><path d="M2.5 8.2 4 4h16l1.5 4.2c.1.3 0 .6-.2.8-.2.2-.5.3-.8.3H3.5c-.3 0-.6-.1-.8-.3-.2-.2-.3-.5-.2-.8zM5 10h14v8H5v-8zm2 2v3h2v-3H7zm6 0v3h2v-3h-2zM4 20h16v1.5H4V20z"/></svg>
@@ -113,7 +86,7 @@ body{background:#D50012}
 <svg class="cam" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.7"><path d="M3 7h3.2L8 5h8l1.8 2H21v11H3z"/><circle cx="12" cy="12.5" r="3.2"/><circle cx="12" cy="12.5" r="1.2" fill="#111"/></svg>
 </label>
 <input type="file" id="fotoInput" accept="image/*" hidden>
-<img id="preview">
+<img id="preview" style="width:100%;height:180px;object-fit:cover;display:none;margin:-2px 0 12px">
 
 <div class="secure">
 <svg class="shield" viewBox="0 0 24 24" fill="#D50012"><path d="M12 2.2 19 5v5.8c0 4.7-3.2 7.9-7 9.7-3.8-1.8-7-5-7-9.7V5L12 2.2zm-.2 13.6 4.2-4.2-1.2-1.2-3 3-1.5-1.5-1.2 1.2 2.7 2.7z"/></svg>
