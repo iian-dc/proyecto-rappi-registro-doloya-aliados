@@ -141,6 +141,8 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+let fotoComprimida = ''; // FOTO COMPRIMIDA QUE SE GUARDA EN FIREBASE
+
 function setupClear(id){
   const input=document.getElementById(id);
   const btn=document.querySelector(`[data-clear="${id}"]`);
@@ -152,10 +154,34 @@ function setupClear(id){
   toggle();
 }
 ['nombre','tipo','whats','direccion'].forEach(setupClear);
+
+// COMPRIMIR FOTO PARA QUE NO PESE TANTO - MAX 400px, CALIDAD 60%
+function comprimirFoto(file, callback){
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const img = new Image();
+    img.onload = function(){
+      const max = 400;
+      let w = img.width, h = img.height;
+      if(w > h){ if(w > max){ h = h * max / w; w = max; } }
+      else { if(h > max){ w = w * max / h; h = max; } }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      callback(canvas.toDataURL('image/jpeg', 0.6));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
 document.getElementById('fotoInput').addEventListener('change',e=>{
   const f=e.target.files[0]; if(!f) return;
   document.getElementById('fileLabel').textContent=f.name;
-  const r=new FileReader(); r.onload=ev=>{const p=document.getElementById('preview');p.src=ev.target.result;p.style.display='block';}; r.readAsDataURL(f);
+  comprimirFoto(f, function(fotoChica){
+    fotoComprimida = fotoChica;
+    const p=document.getElementById('preview');p.src=fotoChica;p.style.display='block';
+  });
 });
 
 function mostrarToast(texto){
@@ -200,6 +226,7 @@ async function registrar(){
       tipo: tipo,
       whatsapp: whats,
       direccion: dir,
+      foto: fotoComprimida || '',
       fotoNombre: document.getElementById('fileLabel').textContent,
       fecha: new Date().toISOString(),
       estado: 'pendiente'
@@ -213,6 +240,9 @@ async function registrar(){
     document.getElementById('tipo').value='';
     document.getElementById('fileLabel').textContent='Imagen de tu negocio (logo o foto)';
     document.getElementById('preview').style.display='none';
+    document.getElementById('preview').src='';
+    document.getElementById('fotoInput').value='';
+    fotoComprimida = '';
     ['nombre','tipo','whats','direccion'].forEach(id=>{
       const b=document.querySelector(`[data-clear="${id}"]`); if(b) b.classList.remove('show');
     });
