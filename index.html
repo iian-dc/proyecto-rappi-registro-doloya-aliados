@@ -29,14 +29,14 @@ body{background:#D50012}
 .file-row span{flex:1;font-size:14px;color:#5A5A5A;font-weight:500;line-height:1.2}
 .file-row img.cam{width:32px;height:32px;flex-shrink:0;object-fit:contain}
 #preview{width:100%;height:170px;object-fit:cover;border-radius:16px;display:none;margin:-2px 0 11px}
-/* SEGURA - BIEN REDUCIDO COMO NOTIFICACION */
-.secure{display:flex;align-items:center;gap:7px;background:#FFD7DE;border-radius:12px;padding:6px 8px 6px 8px;margin-bottom:12px}
-.secure img.shield{width:28px;height:28px;flex-shrink:0;object-fit:contain}
-.secure div{flex:1;min-width:0}
-.secure b{color:#D50012;font-size:12.5px;line-height:1.1;display:block}
-.secure p{font-size:10.5px;line-height:1.2;color:#1A1A1A;margin-top:1px}
-.secure .wa-wrap{width:32px;height:32px;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-left:auto}
-.secure .wa-wrap img{width:32px;height:32px;object-fit:contain}
+/* SEGURA - ARREGLADO, ELEGANTE Y AJUSTADO */
+.secure{display:flex;align-items:center;gap:8px;background:#FFD7DE;border-radius:12px;padding:7px 10px;margin-bottom:12px;width:100%}
+.secure img.shield{width:26px;height:26px;flex-shrink:0;object-fit:contain}
+.secure .txt{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+.secure .txt b{color:#D50012;font-size:12.5px;line-height:1.2;display:block;white-space:nowrap}
+.secure .txt p{font-size:10.5px;line-height:1.3;color:#1A1A1A;margin:1px 0 0;display:block}
+.secure .wa-wrap{width:30px;height:30px;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-left:6px}
+.secure .wa-wrap img{width:30px;height:30px;object-fit:contain;display:block}
 .btn{width:100%;background:linear-gradient(180deg,#E60013 0%,#B0000E 100%);color:#fff;border:none;padding:14px;border-radius:999px;font-size:20px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 4px 12px rgba(213,0,18,.35)}
 .btn:disabled{opacity:.6}
 .btn img{width:20px;height:20px;object-fit:contain}
@@ -105,10 +105,8 @@ body{background:#D50012}
 
 <div class="secure">
 <img class="shield" src="https://img.icons8.com/color/96/shield.png" alt="">
-<div><b>Tu información está segura</b><p>Una vez que completes tu registro, te enviaremos la confirmación al WhatsApp.</p></div>
-<div class="wa-wrap">
-<img src="https://img.icons8.com/color/96/whatsapp--v1.png" alt="">
-</div>
+<div class="txt"><b>Tu información está segura</b><p>Una vez que completes tu registro, te enviaremos la confirmación al WhatsApp.</p></div>
+<div class="wa-wrap"><img src="https://img.icons8.com/color/96/whatsapp--v1.png" alt=""></div>
 </div>
 
 <button class="btn" id="btnRegistrar" onclick="registrar()">Registrar mi negocio <img src="https://img.icons8.com/ios-filled/100/arrow.png" alt=""></button>
@@ -118,10 +116,8 @@ body{background:#D50012}
 <div class="footer"><p>DoloYa, tu negocio más cerca de tus clientes.</p><i></i></div>
 </div>
 
-<!-- NOTIFICACION FALTA -->
 <div id="toast"></div>
 
-<!-- EXITO CON CONFETI -->
 <div id="successModal">
   <div class="box">
     <img src="https://img.icons8.com/color/96/checked--v1.png" alt="">
@@ -171,7 +167,6 @@ function mostrarToast(texto){
 
 function lanzarConfeti(){
   const colores=['#D50012','#FFC107','#25D366','#2196F3','#FF4081','#fff'];
-  // Bastante confeti - varias explosiones
   for(let i=0;i<5;i++){
     setTimeout(()=>{
       confetti({particleCount:120,spread:100,origin:{y:0.6},colors:colores});
@@ -192,7 +187,6 @@ async function registrar(){
   const whats=document.getElementById('whats').value.trim();
   const dir=document.getElementById('direccion').value.trim();
 
-  // VALIDACION UNO POR UNO
   if(!nombre){ mostrarToast('Te falta por completar: Nombre de tu negocio'); document.getElementById('nombre').focus(); return; }
   if(!tipo){ mostrarToast('Te falta por completar: Tipo de negocio'); document.getElementById('tipo').focus(); return; }
   if(!whats){ mostrarToast('Te falta por completar: Número de WhatsApp o Teléfono'); document.getElementById('whats').focus(); return; }
@@ -211,13 +205,9 @@ async function registrar(){
       estado: 'pendiente'
     });
     document.getElementById('msg').style.display='block';
-    // EXITO + CONFETI
+    // SOLO EN PANTALLA - YA NO MANDA A WHATSAPP
     document.getElementById('successModal').classList.add('show');
     lanzarConfeti();
-
-    const TU_NUMERO='5214610000000';
-    const msg=`Hola DoloYa! Quiero registrar mi negocio:%0A- Negocio: ${encodeURIComponent(nombre)}%0A- Tipo: ${encodeURIComponent(tipo)}%0A- WhatsApp: ${encodeURIComponent(whats)}%0A- Dirección: ${encodeURIComponent(dir)}`;
-    setTimeout(()=>{ window.open(`https://wa.me/${TU_NUMERO}?text=${msg}`,'_blank'); }, 800);
 
     ['nombre','whats','direccion'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('tipo').value='';
