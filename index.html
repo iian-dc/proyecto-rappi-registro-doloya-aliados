@@ -8,6 +8,8 @@
 <!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<!-- CONFETI -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',Arial,sans-serif}
 body{background:#D50012}
@@ -27,13 +29,14 @@ body{background:#D50012}
 .file-row span{flex:1;font-size:14px;color:#5A5A5A;font-weight:500;line-height:1.2}
 .file-row img.cam{width:32px;height:32px;flex-shrink:0;object-fit:contain}
 #preview{width:100%;height:170px;object-fit:cover;border-radius:16px;display:none;margin:-2px 0 11px}
-.secure{display:flex;align-items:center;gap:9px;background:#FFD7DE;border-radius:14px;padding:8px 11px;margin-bottom:13px}
-.secure img.shield{width:34px;height:34px;flex-shrink:0;object-fit:contain}
+/* SEGURA - BIEN REDUCIDO COMO NOTIFICACION */
+.secure{display:flex;align-items:center;gap:7px;background:#FFD7DE;border-radius:12px;padding:6px 8px 6px 8px;margin-bottom:12px}
+.secure img.shield{width:28px;height:28px;flex-shrink:0;object-fit:contain}
 .secure div{flex:1;min-width:0}
-.secure b{color:#D50012;font-size:14.5px;line-height:1.1;display:block}
-.secure p{font-size:11.8px;line-height:1.25;color:#1A1A1A;margin-top:2px}
-.secure .wa-wrap{width:38px;height:38px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
-.secure .wa-wrap img{width:38px;height:38px;object-fit:contain}
+.secure b{color:#D50012;font-size:12.5px;line-height:1.1;display:block}
+.secure p{font-size:10.5px;line-height:1.2;color:#1A1A1A;margin-top:1px}
+.secure .wa-wrap{width:32px;height:32px;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-left:auto}
+.secure .wa-wrap img{width:32px;height:32px;object-fit:contain}
 .btn{width:100%;background:linear-gradient(180deg,#E60013 0%,#B0000E 100%);color:#fff;border:none;padding:14px;border-radius:999px;font-size:20px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:0 4px 12px rgba(213,0,18,.35)}
 .btn:disabled{opacity:.6}
 .btn img{width:20px;height:20px;object-fit:contain}
@@ -41,6 +44,19 @@ body{background:#D50012}
 .footer p{font-size:16px;font-weight:700;font-style:italic;line-height:1.2}
 .footer i{display:block;width:175px;height:5px;background:#fff;border-radius:99px;margin:8px auto 0;transform:rotate(-1deg)}
 #msg{font-size:13px;text-align:center;margin-top:10px;font-weight:600;color:#0A7A2E;display:none}
+/* NOTIFICACION CENTRO - FALTA CAMPO */
+#toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:#1A1A1A;color:#fff;padding:14px 20px;border-radius:14px;font-size:14px;font-weight:600;text-align:center;z-index:9999;display:none;box-shadow:0 10px 30px rgba(0,0,0,.35);max-width:85%;line-height:1.35}
+#toast.show{display:block;animation:pop .25s ease forwards}
+@keyframes pop{from{transform:translate(-50%,-50%) scale(.85);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
+/* EXITO CENTRO */
+#successModal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:10000;padding:20px}
+#successModal.show{display:flex}
+#successModal .box{background:#fff;border-radius:22px;padding:24px 20px 20px;text-align:center;max-width:320px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.3);animation:pop2 .3s ease}
+@keyframes pop2{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+#successModal .box img{width:68px;height:68px;object-fit:contain;margin-bottom:10px}
+#successModal .box h2{font-size:21px;color:#0A7A2E;margin-bottom:6px}
+#successModal .box p{font-size:13.5px;color:#555;line-height:1.4}
+#successModal .box button{margin-top:16px;width:100%;background:#D50012;color:#fff;border:none;padding:12px;border-radius:999px;font-size:15px;font-weight:800;cursor:pointer}
 @media(max-width:480px){
   .wrap{max-width:100%}
   .card{margin:-2px 10px 0;padding:18px 11px 16px}
@@ -54,14 +70,12 @@ body{background:#D50012}
 <div class="top-img"><img src="portada-aliados.jpg" alt="DoloYa Registro de Aliados"></div>
 <div class="card">
 
-<!-- 1 TIENDITA -->
 <label class="field">
 <img class="icon" src="https://img.icons8.com/color/96/shop.png" alt="">
 <input id="nombre" placeholder="Nombre de tu restaurante o negocio">
 <button type="button" class="clear" data-clear="nombre">×</button>
 </label>
 
-<!-- 2 CUBIERTOS -->
 <label class="field">
 <img class="icon" src="https://img.icons8.com/color/96/cutlery.png" alt="">
 <select id="tipo"><option value="">Tipo de negocio</option><option>Restaurante</option><option>Taquería</option><option>Mariscos</option><option>Pizza</option><option>Hamburguesas</option><option>Café / Cafetería</option><option>Panadería</option><option>Antojitos</option><option>Otro</option></select>
@@ -69,21 +83,18 @@ body{background:#D50012}
 <button type="button" class="clear" data-clear="tipo">×</button>
 </label>
 
-<!-- 3 WHATSAPP -->
 <label class="field">
 <img class="icon" src="https://img.icons8.com/color/96/whatsapp--v1.png" alt="">
 <input id="whats" type="tel" placeholder="Número de WhatsApp o Teléfono">
 <button type="button" class="clear" data-clear="whats">×</button>
 </label>
 
-<!-- 4 UBICACION -->
 <label class="field">
 <img class="icon" src="https://img.icons8.com/color/96/marker.png" alt="">
 <input id="direccion" placeholder="Dirección de tu establecimiento">
 <button type="button" class="clear" data-clear="direccion">×</button>
 </label>
 
-<!-- 5 IMAGEN DE NEGOCIO -->
 <label class="field file-row" for="fotoInput">
 <img class="icon" src="https://img.icons8.com/color/96/image.png" alt="">
 <span id="fileLabel">Imagen de tu negocio (logo o foto)</span>
@@ -92,7 +103,6 @@ body{background:#D50012}
 <input type="file" id="fotoInput" accept="image/*" hidden>
 <img id="preview">
 
-<!-- SEGURA -->
 <div class="secure">
 <img class="shield" src="https://img.icons8.com/color/96/shield.png" alt="">
 <div><b>Tu información está segura</b><p>Una vez que completes tu registro, te enviaremos la confirmación al WhatsApp.</p></div>
@@ -108,8 +118,20 @@ body{background:#D50012}
 <div class="footer"><p>DoloYa, tu negocio más cerca de tus clientes.</p><i></i></div>
 </div>
 
+<!-- NOTIFICACION FALTA -->
+<div id="toast"></div>
+
+<!-- EXITO CON CONFETI -->
+<div id="successModal">
+  <div class="box">
+    <img src="https://img.icons8.com/color/96/checked--v1.png" alt="">
+    <h2>¡Registro Exitoso!</h2>
+    <p>Tu negocio fue registrado correctamente.<br>Te confirmamos por WhatsApp.</p>
+    <button onclick="cerrarExito()">Listo</button>
+  </div>
+</div>
+
 <script>
-// TU FIREBASE - doloya-registro
 const firebaseConfig = {
   apiKey: "AIzaSyD462705yVQfM8McF8LxnhkR9utTlW3tkE",
   authDomain: "doloya-registro.firebaseapp.com",
@@ -140,12 +162,42 @@ document.getElementById('fotoInput').addEventListener('change',e=>{
   const r=new FileReader(); r.onload=ev=>{const p=document.getElementById('preview');p.src=ev.target.result;p.style.display='block';}; r.readAsDataURL(f);
 });
 
+function mostrarToast(texto){
+  const t=document.getElementById('toast');
+  t.textContent=texto;
+  t.classList.add('show');
+  setTimeout(()=>{ t.classList.remove('show'); }, 2200);
+}
+
+function lanzarConfeti(){
+  const colores=['#D50012','#FFC107','#25D366','#2196F3','#FF4081','#fff'];
+  // Bastante confeti - varias explosiones
+  for(let i=0;i<5;i++){
+    setTimeout(()=>{
+      confetti({particleCount:120,spread:100,origin:{y:0.6},colors:colores});
+    }, i*250);
+  }
+  setTimeout(()=>{ confetti({particleCount:200,angle:60,spread:70,origin:{x:0,y:0.7},colors:colores}); }, 300);
+  setTimeout(()=>{ confetti({particleCount:200,angle:120,spread:70,origin:{x:1,y:0.7},colors:colores}); }, 500);
+  setTimeout(()=>{ confetti({particleCount:150,spread:360,origin:{x:0.5,y:0.5},colors:colores,scalar:1.1}); }, 800);
+}
+
+function cerrarExito(){
+  document.getElementById('successModal').classList.remove('show');
+}
+
 async function registrar(){
   const nombre=document.getElementById('nombre').value.trim();
   const tipo=document.getElementById('tipo').value;
   const whats=document.getElementById('whats').value.trim();
   const dir=document.getElementById('direccion').value.trim();
-  if(!nombre||!tipo||!whats||!dir){alert('Te faltó un dato. Llena todos los campos porfa');return;}
+
+  // VALIDACION UNO POR UNO
+  if(!nombre){ mostrarToast('Te falta por completar: Nombre de tu negocio'); document.getElementById('nombre').focus(); return; }
+  if(!tipo){ mostrarToast('Te falta por completar: Tipo de negocio'); document.getElementById('tipo').focus(); return; }
+  if(!whats){ mostrarToast('Te falta por completar: Número de WhatsApp o Teléfono'); document.getElementById('whats').focus(); return; }
+  if(!dir){ mostrarToast('Te falta por completar: Dirección de tu establecimiento'); document.getElementById('direccion').focus(); return; }
+
   const btn=document.getElementById('btnRegistrar');
   btn.disabled=true; btn.textContent='Guardando...';
   try{
@@ -159,9 +211,14 @@ async function registrar(){
       estado: 'pendiente'
     });
     document.getElementById('msg').style.display='block';
+    // EXITO + CONFETI
+    document.getElementById('successModal').classList.add('show');
+    lanzarConfeti();
+
     const TU_NUMERO='5214610000000';
     const msg=`Hola DoloYa! Quiero registrar mi negocio:%0A- Negocio: ${encodeURIComponent(nombre)}%0A- Tipo: ${encodeURIComponent(tipo)}%0A- WhatsApp: ${encodeURIComponent(whats)}%0A- Dirección: ${encodeURIComponent(dir)}`;
-    window.open(`https://wa.me/${TU_NUMERO}?text=${msg}`,'_blank');
+    setTimeout(()=>{ window.open(`https://wa.me/${TU_NUMERO}?text=${msg}`,'_blank'); }, 800);
+
     ['nombre','whats','direccion'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('tipo').value='';
     document.getElementById('fileLabel').textContent='Imagen de tu negocio (logo o foto)';
@@ -170,7 +227,7 @@ async function registrar(){
       const b=document.querySelector(`[data-clear="${id}"]`); if(b) b.classList.remove('show');
     });
   }catch(e){
-    alert('Hubo un error guardando. Revisa las reglas de Firebase. Error: '+e.message);
+    mostrarToast('Hubo un error guardando. Revisa Firebase.');
   }
   btn.disabled=false; btn.innerHTML='Registrar mi negocio <img src="https://img.icons8.com/ios-filled/100/arrow.png" style="width:20px;height:20px;object-fit:contain" alt="">';
 }
