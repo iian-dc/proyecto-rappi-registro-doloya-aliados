@@ -141,6 +141,17 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+// CONTADOR DE VISITAS - estadisticas / visitas - EN REGISTRO
+// Cada que alguien abre el link, suma +1. Si recarga la pagina, no vuelve a contar.
+try{
+  if(!sessionStorage.getItem('doloya_visita_contada')){
+    sessionStorage.setItem('doloya_visita_contada','1');
+    db.ref('estadisticas/visitas').transaction(function(actual){
+      return (actual || 0) + 1;
+    });
+  }
+}catch(e){ console.log(e); }
+
 let fotoComprimida = ''; // FOTO COMPRIMIDA QUE SE GUARDA EN FIREBASE
 
 function setupClear(id){
