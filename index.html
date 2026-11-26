@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Afíliate a DoloYa - Restaurantes</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
 body{background:#fff;color:#111}
@@ -36,20 +39,46 @@ header{position:sticky;top:0;z-index:50;background:#fff;display:flex;align-items
 .promo p{font-size:16px;line-height:1.5;margin-top:12px;font-weight:600}
 .btn-gabi{display:inline-flex;align-items:center;gap:8px;background:#16a34a;color:#fff;border:none;padding:13px 20px;border-radius:10px;font-weight:800;font-size:16px;margin-top:18px;cursor:pointer}
 .btn-gabi svg{width:20px;height:20px;fill:#fff}
+/* TARJETA REGISTRO - MISMA ESTETICA NUEVA + LOGICA DEL VIEJITO */
 .form-box{background:#fff;border-radius:14px;margin:22px 16px 0;padding:24px 18px;box-shadow:0 10px 30px rgba(0,0,0,.2)}
 .form-box h3{text-align:center;font-size:26px;font-weight:900}
-.form-box p{text-align:center;margin-top:8px}
-.form-box a{color:#16a34a;font-weight:800}
-.inp{width:100%;height:56px;border:1px solid #e5e7eb;border-radius:10px;padding:0 14px;margin-top:14px;font-size:15px;outline:none}
-.row{display:flex;gap:10px}
-.row .inp{flex:1}
-.check{display:flex;gap:10px;margin-top:16px;font-size:11px;line-height:1.4;color:#555}
-.check a{color:#16a34a}
-.btn-registrar2{width:100%;height:52px;background:#eee;color:#999;border:none;border-radius:10px;font-weight:800;margin-top:18px;font-size:15px}
-.link-no{ display:block;text-align:center;color:#16a34a;font-weight:800;margin-top:18px;text-decoration:none }
+.form-box p.sub{text-align:center;margin-top:8px;color:#555}
+.field{position:relative;display:flex;align-items:center;gap:10px;background:#F0F0F0;border-radius:999px;padding:11px 38px 11px 12px;margin-top:14px;border:1px solid #E8E8E8}
+.field img.icon{width:30px;height:30px;flex-shrink:0;object-fit:contain}
+.field input,.field select{border:none;background:transparent;outline:none;width:100%;font-size:14.5px;color:#4A4A4A;font-weight:500;min-width:0}
+.field input::placeholder{color:#6A6A6A}
+.field select{appearance:none;cursor:pointer}
+.field img.chev{width:17px;height:17px;flex-shrink:0;position:absolute;right:34px;pointer-events:none;object-fit:contain}
+.clear{position:absolute;right:11px;top:50%;transform:translateY(-50%);width:19px;height:19px;background:rgba(0,0,0,.06);color:#999;border:none;font-size:11px;cursor:pointer;display:none;align-items:center;justify-content:center;border-radius:50%}
+.clear.show{display:flex}
+.file-row{cursor:pointer;padding-right:13px}
+.file-row span{flex:1;font-size:14px;color:#5A5A5A;font-weight:500;line-height:1.2}
+.file-row img.cam{width:32px;height:32px;flex-shrink:0;object-fit:contain}
+#preview{width:100%;height:170px;object-fit:cover;border-radius:16px;display:none;margin-top:12px}
+.secure{display:flex;align-items:center;gap:8px;background:#FFD7DE;border-radius:12px;padding:7px 10px;margin-top:14px;width:100%}
+.secure img.shield{width:26px;height:26px;flex-shrink:0;object-fit:contain}
+.secure .txt{flex:1;min-width:0}
+.secure .txt b{color:#D50012;font-size:12.5px;line-height:1.2;display:block}
+.secure .txt p{font-size:10.5px;line-height:1.3;color:#1A1A1A;margin:1px 0 0}
+.secure .wa-wrap{width:30px;height:30px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.secure .wa-wrap img{width:30px;height:30px;object-fit:contain}
+/* BOTON - GRIS HASTA LLENAR TODO, LUEGO ROJO */
+.btn-registrar2{width:100%;height:52px;border:none;border-radius:999px;font-weight:800;margin-top:18px;font-size:16px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;background:#eee;color:#999;box-shadow:none}
+.btn-registrar2.activo{background:linear-gradient(180deg,#E60013 0%,#B0000E 100%);color:#fff;box-shadow:0 4px 12px rgba(213,0,18,.35)}
+.btn-registrar2 img{width:20px;height:20px;object-fit:contain}
 .footer{background:#111;color:#fff;text-align:center;padding:18px;font-size:12px}
 .wa{position:fixed;right:16px;bottom:18px;width:58px;height:58px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:99;box-shadow:0 8px 20px rgba(0,0,0,.3);text-decoration:none}
 .wa svg{width:32px;height:32px;fill:#fff}
+#toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:#1A1A1A;color:#fff;padding:14px 20px;border-radius:14px;font-size:14px;font-weight:600;text-align:center;z-index:9999;display:none;box-shadow:0 10px 30px rgba(0,0,0,.35);max-width:85%;line-height:1.35}
+#toast.show{display:block;animation:pop .25s ease forwards}
+@keyframes pop{from{transform:translate(-50%,-50%) scale(.85);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
+#successModal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:10000;padding:20px}
+#successModal.show{display:flex}
+#successModal .box{background:#fff;border-radius:22px;padding:24px 20px 20px;text-align:center;max-width:320px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+#successModal .box img{width:68px;height:68px;object-fit:contain;margin:0 auto 10px}
+#successModal .box h2{font-size:21px;color:#0A7A2E;margin-bottom:6px}
+#successModal .box p{font-size:13.5px;color:#555;line-height:1.4}
+#successModal .box button{margin-top:16px;width:100%;background:#D50012;color:#fff;border:none;padding:12px;border-radius:999px;font-size:15px;font-weight:800;cursor:pointer}
 @media(min-width:700px){ .hero,.porque,.promo,.form-box{max-width:620px;margin-left:auto;margin-right:auto} .hero-img{margin-left:0;margin-right:0;border-radius:16px} .hero-img img{border-radius:16px} }
 </style>
 </head>
@@ -93,21 +122,23 @@ header{position:sticky;top:0;z-index:50;background:#fff;display:flex;align-items
 
 <div class="form-box">
 <h3>Registra tu restaurante</h3>
-<p>¿Ya comenzaste tu registro?<br><a href="#">continúa aquí.</a></p>
-<input class="inp" id="nombre" placeholder="Nombre del restaurante">
-<select class="inp" id="tipo"><option>Tipo de comida</option><option>Mexicana</option><option>Pizzas</option><option>Hamburguesas</option><option>Mariscos</option><option>China</option><option>Otra</option></select>
-<input class="inp" id="dir" placeholder="Dirección del restaurante  📍">
-<div class="row">
-<select class="inp"><option>México (+52)</option></select>
-<input class="inp" id="movil" placeholder="Tu móvil">
-</div>
-<p style="font-size:11px;color:#777;text-align:left;margin-top:6px">Se requiere un número de WhatsApp</p>
-<input class="inp" id="email" placeholder="E-mail del responsable" type="email">
-<input class="inp" id="pass" placeholder="Crea una contraseña" type="password">
-<label class="check"><input type="checkbox" id="check"> <span>Autorizo expresamente a DoloYa a tratar mis datos personales para mantener comunicaciones conmigo vía WhatsApp, incluyendo el uso de herramientas automatizadas y/o de inteligencia artificial, conforme a las finalidades descritas en la <a href="#">Política de Tratamiento de Datos Personales.</a></span></label>
-<button class="btn-registrar2" onclick="registrar()">Registrar restaurante</button>
-<p id="msg" style="color:#16a34a;font-weight:800;display:none;margin-top:12px">✅ ¡Listo! Te contactamos por WhatsApp.</p>
-<a class="link-no" href="https://wa.me/5210000000000">Mi negocio no es un restaurante</a>
+<p class="sub">¿Ya comenzaste tu registro? <a href="#" style="color:#16a34a;font-weight:800">continúa aquí.</a></p>
+
+<label class="field"><img class="icon" src="https://img.icons8.com/color/96/shop.png" alt=""><input id="nombre" placeholder="Nombre de tu restaurante o negocio"><button type="button" class="clear" data-clear="nombre">×</button></label>
+<label class="field"><img class="icon" src="https://img.icons8.com/color/96/cutlery.png" alt=""><select id="tipo"><option value="">Tipo de negocio</option><option>Restaurante</option><option>Taquería</option><option>Mariscos</option><option>Pizza</option><option>Hamburguesas</option><option>Café / Cafetería</option><option>Panadería</option><option>Antojitos</option><option>Otro</option></select><img class="chev" src="https://img.icons8.com/ios-filled/100/expand-arrow--v1.png" alt=""><button type="button" class="clear" data-clear="tipo">×</button></label>
+<label class="field"><img class="icon" src="https://img.icons8.com/color/96/marker.png" alt=""><input id="direccion" placeholder="Dirección de tu establecimiento"><button type="button" class="clear" data-clear="direccion">×</button></label>
+<label class="field"><img class="icon" src="https://img.icons8.com/color/96/whatsapp--v1.png" alt=""><input id="whats" type="tel" placeholder="Número de WhatsApp o Teléfono"><button type="button" class="clear" data-clear="whats">×</button></label>
+<label class="field"><img class="icon" src="https://img.icons8.com/color/96/new-post.png" alt=""><input id="email" type="email" placeholder="E-mail del responsable"><button type="button" class="clear" data-clear="email">×</button></label>
+<label class="field"><img class="icon" src="https://img.icons8.com/color/96/password.png" alt=""><input id="pass" type="password" placeholder="Crea una contraseña"><button type="button" class="clear" data-clear="pass">×</button></label>
+
+<label class="field file-row" for="fotoInput"><img class="icon" src="https://img.icons8.com/color/96/image.png" alt=""><span id="fileLabel">Imagen de tu negocio (logo o foto)</span><img class="cam" src="https://img.icons8.com/ios/100/camera--v1.png" alt=""></label>
+<input type="file" id="fotoInput" accept="image/*" hidden>
+<img id="preview">
+
+<div class="secure"><img class="shield" src="https://img.icons8.com/color/96/shield.png" alt=""><div class="txt"><b>Tu información está segura</b><p>Una vez que completes tu registro, te enviaremos la confirmación al WhatsApp.</p></div><div class="wa-wrap"><img src="https://img.icons8.com/color/96/whatsapp--v1.png" alt=""></div></div>
+
+<button class="btn-registrar2" id="btnRegistrar" onclick="registrar()">Registrar restaurante <img src="https://img.icons8.com/ios-filled/100/arrow.png" alt=""></button>
+<p id="msg" style="font-size:13px;text-align:center;margin-top:10px;font-weight:600;color:#0A7A2E;display:none">Registro guardado. Te confirmamos por WhatsApp.</p>
 </div>
 <div style="height:22px"></div>
 </section>
@@ -115,17 +146,57 @@ header{position:sticky;top:0;z-index:50;background:#fff;display:flex;align-items
 <div class="footer">© 2026 DoloYa - Dolores Hidalgo, Guanajuato</div>
 <a class="wa" href="https://wa.me/5210000000000" target="_blank"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></a>
 
+<div id="toast"></div>
+<div id="successModal"><div class="box"><img src="https://img.icons8.com/color/96/checked--v1.png" alt=""><h2>¡Registro Exitoso!</h2><p>Tu negocio fue registrado correctamente.<br>Te confirmamos por WhatsApp.</p><button onclick="cerrarExito()">Listo</button></div></div>
+
 <script>
-function registrar(){
-  const n=document.getElementById('nombre').value.trim();
-  const m=document.getElementById('movil').value.trim();
-  const c=document.getElementById('check').checked;
-  if(!n || !m){ alert('Escribe nombre del restaurante y tu móvil'); return; }
-  if(!c){ alert('Acepta la política de datos'); return; }
-  const msg=`Hola DoloYa, quiero afiliar mi restaurante: ${n}. Tipo: ${document.getElementById('tipo').value}. Dirección: ${document.getElementById('dir').value}. Móvil: ${m}. Email: ${document.getElementById('email').value}`;
-  document.getElementById('msg').style.display='block';
-  window.open('https://wa.me/5210000000000?text='+encodeURIComponent(msg),'_blank');
+const firebaseConfig = { apiKey: "AIzaSyD462705yVQfM8McF8LxnhkR9utTlW3tkE", authDomain: "doloya-registro.firebaseapp.com", databaseURL: "https://doloya-registro-default-rtdb.firebaseio.com", projectId: "doloya-registro", storageBucket: "doloya-registro.firebasestorage.app", messagingSenderId: "780335945555", appId: "1:780335945555:web:d58cda187e9933292573a6", measurementId: "G-YZ15ZBRNQ1" };
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+try{ if(!sessionStorage.getItem('doloya_visita_contada')){ sessionStorage.setItem('doloya_visita_contada','1'); db.ref('estadisticas/visitas').transaction(function(actual){ return (actual || 0) + 1; }); } }catch(e){}
+let fotoComprimida = '';
+function setupClear(id){ const input=document.getElementById(id); const btn=document.querySelector(`[data-clear="${id}"]`); if(!input||!btn) return; const toggle=()=>{ btn.classList.toggle('show', !!input.value); actualizarBoton(); }; input.addEventListener('input',toggle); input.addEventListener('change',toggle); btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation(); input.value=''; input.focus(); toggle();}); toggle(); }
+['nombre','tipo','whats','direccion','email','pass'].forEach(setupClear);
+function actualizarBoton(){
+  const lleno = document.getElementById('nombre').value.trim() && document.getElementById('tipo').value && document.getElementById('direccion').value.trim() && document.getElementById('whats').value.trim() && document.getElementById('email').value.trim() && document.getElementById('pass').value.trim();
+  const b=document.getElementById('btnRegistrar');
+  b.classList.toggle('activo', !!lleno);
+  b.disabled = !lleno;
 }
+function comprimirFoto(file, callback){ const reader=new FileReader(); reader.onload=function(e){ const img=new Image(); img.onload=function(){ const max=400; let w=img.width,h=img.height; if(w>h){ if(w>max){ h=h*max/w; w=max; } } else { if(h>max){ w=w*max/h; h=max; } } const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h; canvas.getContext('2d').drawImage(img,0,0,w,h); callback(canvas.toDataURL('image/jpeg',0.6)); }; img.src=e.target.result; }; reader.readAsDataURL(file); }
+document.getElementById('fotoInput').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f) return; document.getElementById('fileLabel').textContent=f.name; comprimirFoto(f,function(fotoChica){ fotoComprimida=fotoChica; const p=document.getElementById('preview'); p.src=fotoChica; p.style.display='block'; }); });
+function mostrarToast(texto){ const t=document.getElementById('toast'); t.textContent=texto; t.classList.add('show'); setTimeout(()=>{ t.classList.remove('show'); },2200); }
+function lanzarConfeti(){ const colores=['#D50012','#FFC107','#25D366','#2196F3','#FF4081','#fff']; for(let i=0;i<5;i++){ setTimeout(()=>{ confetti({particleCount:120,spread:100,origin:{y:0.6},colors:colores}); }, i*250); } }
+function cerrarExito(){ document.getElementById('successModal').classList.remove('show'); }
+async function registrar(){
+  const nombre=document.getElementById('nombre').value.trim();
+  const tipo=document.getElementById('tipo').value;
+  const whats=document.getElementById('whats').value.trim();
+  const dir=document.getElementById('direccion').value.trim();
+  const email=document.getElementById('email').value.trim();
+  const pass=document.getElementById('pass').value.trim();
+  if(!nombre){ mostrarToast('Te falta por completar: Nombre de tu negocio'); document.getElementById('nombre').focus(); return; }
+  if(!tipo){ mostrarToast('Te falta por completar: Tipo de negocio'); document.getElementById('tipo').focus(); return; }
+  if(!dir){ mostrarToast('Te falta por completar: Dirección de tu establecimiento'); document.getElementById('direccion').focus(); return; }
+  if(!whats){ mostrarToast('Te falta por completar: Número de WhatsApp o Teléfono'); document.getElementById('whats').focus(); return; }
+  if(!email){ mostrarToast('Te falta por completar: E-mail del responsable'); document.getElementById('email').focus(); return; }
+  if(!pass){ mostrarToast('Te falta por completar: Crea una contraseña'); document.getElementById('pass').focus(); return; }
+  const btn=document.getElementById('btnRegistrar'); btn.disabled=true; btn.textContent='Guardando...';
+  try{
+    await db.ref('aliados').push({ nombre:nombre, tipo:tipo, whatsapp:whats, direccion:dir, email:email, password:pass, foto:fotoComprimida||'', fotoNombre:document.getElementById('fileLabel').textContent, fecha:new Date().toISOString(), estado:'pendiente' });
+    document.getElementById('msg').style.display='block';
+    document.getElementById('successModal').classList.add('show');
+    lanzarConfeti();
+    ['nombre','whats','direccion','email','pass'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('tipo').value='';
+    document.getElementById('fileLabel').textContent='Imagen de tu negocio (logo o foto)';
+    document.getElementById('preview').style.display='none'; document.getElementById('preview').src=''; document.getElementById('fotoInput').value=''; fotoComprimida='';
+    ['nombre','tipo','whats','direccion','email','pass'].forEach(id=>{ const b=document.querySelector(`[data-clear="${id}"]`); if(b) b.classList.remove('show'); });
+    actualizarBoton();
+  }catch(e){ mostrarToast('Hubo un error guardando. Revisa Firebase.'); }
+  btn.disabled=false; actualizarBoton(); btn.innerHTML='Registrar restaurante <img src="https://img.icons8.com/ios-filled/100/arrow.png" style="width:20px;height:20px;object-fit:contain" alt="">';
+}
+actualizarBoton();
 </script>
 </body>
 </html>
